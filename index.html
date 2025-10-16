@@ -1,83 +1,69 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>مقر F16 — مكتبة أدوات الأمن السيبراني (1000)</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>مقر F16 — مكتبة الأدوات (400)</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="brand">
-      <div class="logo">F16</div>
-      <div class="title-block">
-        <div class="title">مقر F16 — مكتبة أدوات الأمن السيبراني</div>
-        <div class="subtitle">مرجع تعليمي وآمن — استعمل الأدوات داخل مختبر معزول أو على أنظمة لديك إذن بفحصها</div>
-      </div>
-    </div>
-  </header>
+  <div class="header">
+    <div class="brand">مقر F16 — مكتبة الأدوات (400)</div>
+    <div>@HRT_AMN • F16 Cyber Lab</div>
+  </div>
 
-  <div class="toolbar">
+  <div class="toolbar" role="toolbar" aria-label="شريط أدوات">
     <div class="filters" role="group" aria-label="فلاتر">
       <button id="btnAll" class="filter-btn active" data-filter="all">الكل</button>
       <button id="btnPy" class="filter-btn" data-filter="بايثون">بايثون</button>
       <button id="btnTx" class="filter-btn" data-filter="تريمكس">تريمكس</button>
     </div>
-
-    <div class="search-wrap">
-      <input id="searchInput" class="search" placeholder="🔎 ابحث باسم الأداة أو الوصف — اضغط '/' للتركيز">
-      <div class="shortcuts">مفاتيح: <span class="kbd">1</span> الكل • <span class="kbd">2</span> بايثون • <span class="kbd">3</span> تريمكس • <span class="kbd">/</span> بحث</div>
+    <input id="search" class="search-input" placeholder="ابحث عن أداة بالاسم أو الوصف — اضغط '/' للتركيز" />
+    <div style="margin-left:8px;color:var(--muted);font-weight:700">
+      مفاتيح: <span class="kbd">1</span> الكل — <span class="kbd">2</span> بايثون — <span class="kbd">3</span> تريمكس — <span class="kbd">/</span> بحث
     </div>
-
-    <div class="info">إجمالي الأدوات: <span id="totalCount">1000</span></div>
   </div>
 
-  <main class="container">
-    <div id="grid" class="grid" role="list" aria-live="polite"></div>
+  <div class="container">
+    <div id="grid" class="grid" role="list"></div>
+    <div class="panel-footer">© @HRT_AMN — مرجع تعليمي فقط. لا تستخدم الأدوات بدون إذن.</div>
+  </div>
 
-    <div class="load-more-wrap">
-      <button id="loadMore" class="btn primary">تحميل المزيد (100)</button>
-    </div>
-
-    <div class="footer-note">© @HRT_AMN — مرجع تعليمي فقط. أي استخدام غير قانوني خارج مسؤولية المستخدم.</div>
-  </main>
-
-  <!-- Modal -->
   <div id="modalBack" class="modal-back" aria-hidden="true">
-    <div id="modal" class="modal" role="dialog" aria-modal="true">
-      <div class="modal-head">
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+      <div style="display:flex;justify-content:space-between;align-items:center">
         <h2 id="mTitle">أداة</h2>
-        <div class="modal-controls">
-          <button id="copyInstall" class="btn copy">نسخ التثبيت</button>
-          <button id="copyExample" class="btn copy">نسخ المثال</button>
-          <button id="closeModal" class="btn close">إغلاق</button>
+        <div>
+          <button id="copyInstall" class="btn">نسخ التثبيت</button>
+          <button id="copyExample" class="btn">نسخ المثال</button>
+          <button id="closeModal" class="btn primary">إغلاق</button>
         </div>
       </div>
 
-      <div id="mMeta" class="meta"></div>
-      <pre id="mDetailed" class="code"></pre>
+      <div style="margin-top:12px;color:var(--muted)" id="mCategory"></div>
+      <pre id="mDetailed" class="code" style="margin-top:12px"></pre>
 
-      <div class="section">
-        <div class="section-title">أمر التثبيت</div>
+      <div style="margin-top:12px">
+        <div style="font-weight:700">أمر التثبيت</div>
         <pre id="mInstall" class="code"></pre>
       </div>
 
-      <div class="section">
-        <div class="section-title">مثال آمن</div>
+      <div style="margin-top:12px">
+        <div style="font-weight:700">مثال آمن</div>
         <pre id="mExample" class="code"></pre>
       </div>
 
-      <div class="section">
-        <div class="section-title">كيف تستعملها — خطوات آمنة</div>
+      <div style="margin-top:12px">
+        <div style="font-weight:700">كيف تستعملها — خطوات آمنة</div>
         <div id="mHow"></div>
       </div>
 
-      <div class="section actions">
-        <button id="downloadBtn" class="btn primary">تحميل المقتطف الآمن</button>
+      <div style="margin-top:12px">
+        <button id="downloadBtn" class="btn primary">تحميل المقتطف</button>
       </div>
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
