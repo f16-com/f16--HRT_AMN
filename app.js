@@ -1,208 +1,443 @@
-// بيانات الأدوات (1000 أداة قوية - 500 بايثون + 500 تريمكس)
-const TOOLS = [
-  // === 500 أداة بايثون قوية ===
-  {id:"py_001",name:"SQLMap",category:"بايثون",desc:"أداة SQLMap — اختراق قواعد البيانات عبر SQL Injection.",detailed:"SQLMap أداة تلقائية لاكتشاف واستغلال ثغرات حقن SQL. تدعم أنواعًا كثيرة من قواعد البيانات (MySQL, PostgreSQL, Oracle, إلخ).",how:["ثبّت الأداة: git clone https://github.com/sqlmapproject/sqlmap","ادخل المجلد: cd sqlmap","شغّل على موقع تدريبي: python sqlmap.py -u \"http://testphp.vulnweb.com/artists.php?artist=1\" --dbs","لا تستخدمها على مواقع غير مملوكة لك — لأنها جريمة!"],install:"git clone https://github.com/sqlmapproject/sqlmap",example:"# مثال آمن على موقع تدريبي\npython sqlmap.py -u \"http://testphp.vulnweb.com/artists.php?artist=1\" --batch --dbs",snippet_key:"py_001_snip"},
-  {id:"py_002",name:"Nuclei",category:"بايثون",desc:"أداة Nuclei — فحص المواقع ضد 1000+ ثغرة معروفة.",detailed:"Nuclei أداة سريعة لفحص الثغرات باستخدام قوالب جاهزة. تدعم HTTP, DNS, TCP, وبروتوكولات أخرى.",how:["ثبّت Go: pkg install golang","ثبّت Nuclei: go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest","شغّل على موقعك: nuclei -u http://yoursite.com","استخدمها فقط على أنظمتك أنت!"],install:"go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest",example:"# فحص موقعك\nnuclei -u http://localhost --severity high",snippet_key:"py_002_snip"},
-  {id:"py_003",name:"Scapy",category:"بايثون",desc:"أداة Scapy — تحليل وصنع حزم الشبكة من الصفر.",detailed:"Scapy مكتبة قوية لمعالجة الحزم. تسمح بإرسال، التقاط، وتحليل الحزم على مستوى منخفض.",how:["ثبّت Scapy: pip install scapy","افتح بايثون: python","جرب: from scapy.all import *; send(IP(dst=\"192.168.1.1\")/ICMP())","استخدمه فقط على شبكتك الخاصة!"],install:"pip install scapy",example:"from scapy.all import *\n\n# إرسال حزمة ICMP (آمن على localhost)\npkt = IP(dst=\"127.0.0.1\")/ICMP()\nsend(pkt)",snippet_key:"py_003_snip"},
-  {id:"py_004",name:"Sherlock",category:"بايثون",desc:"أداة Sherlock — البحث عن حسابات الشخص على 300+ موقع.",detailed:"Sherlock يبحث عن أسماء المستخدمين عبر الإنترنت. يدعم أكثر من 300 موقع.",how:["ثبّت Sherlock: git clone https://github.com/sherlock-project/sherlock","ادخل المجلد: cd sherlock","ثبّت المتطلبات: python3 -m pip install -r requirements.txt","ابحث عن اسم: python3 sherlock username"],install:"git clone https://github.com/sherlock-project/sherlock",example:"# البحث عن اسم مستخدم\npython3 sherlock john_doe",snippet_key:"py_004_snip"},
-  {id:"py_005",name:"PhoneInfoga",category:"بايثون",desc:"أداة PhoneInfoga — جمع معلومات عن رقم الهاتف من مصادر علنية.",detailed:"PhoneInfoga يفحص الأرقام عبر Google, Facebook, وقواعد بيانات عامة. لا يخترق أي نظام.",how:["ثبّت PhoneInfoga: git clone https://github.com/sundowndev/phoneinfoga","ادخل المجلد: cd phoneinfoga","ثبّت المتطلبات: python3 -m pip install -r requirements.txt","افحص رقم: python3 phoneinfoga.py -n +964770XXXXXXX"],install:"git clone https://github.com/sundowndev/phoneinfoga",example:"# فحص رقم عراقي\npython3 phoneinfoga.py -n +964770123456",snippet_key:"py_005_snip"},
-  // ... (استمر بنفس النمط حتى 500 أداة بايثون)
+/* app.js — نسخة محدثة: أدوات قوية، وصياغة دفاعية/تعليمية.
+   تحذير: الأمثلة آمنة (--version, --help, عرض ملفات محلية). 
+   لا يعطى هنا أي تعليمات لاستغلال أنظمة خارجية.
+*/
 
-  // === 500 أداة تريمكس قوية ===
-  {id:"tx_001",name:"Nmap",category:"تريمكس",desc:"أداة Nmap — مسح الشبكة لاكتشاف الأجهزة والمنافذ.",detailed:"Nmap أداة قياسية لمسح الشبكات. تظهر الأجهزة المتصلة والمنافذ المفتوحة.",how:["ثبّت Nmap: pkg install nmap","امسح شبكتك: nmap -sn 192.168.1.0/24","افحص جهاز: nmap -sV 192.168.1.1","لا تستخدمه على شبكات غير مملوكة لك!"],install:"pkg install nmap",example:"# مسح الشبكة المحلية\nnmap -sn 192.168.1.0/24",snippet_key:"tx_001_snip"},
-  {id:"tx_002",name:"Hydra",category:"تريمكس",desc:"أداة Hydra — كسر باسوردات عبر هجوم قوة غاشمة.",detailed:"Hydra يدعم 50+ بروتوكول (SSH, FTP, HTTP, إلخ). يجرب آلاف الباسوردات في الدقيقة.",how:["ثبّت Hydra: pkg install hydra","جهّز قائمة باسوردات: echo -e \"password\\n123456\" > passwords.txt","اكسر باسورد SSH: hydra -l admin -P passwords.txt 192.168.1.1 ssh","استخدمه فقط على أنظمتك أنت!"],install:"pkg install hydra",example:"# كسر باسورد SSH\nhydra -l admin -P passwords.txt 192.168.1.1 ssh",snippet_key:"tx_002_snip"},
-  {id:"tx_003",name:"Metasploit",category:"تريمكس",desc:"أداة Metasploit — منصة اختراق متقدمة.",detailed:"Metasploit يحتوي على 2000+ ثغرة جاهزة. يزرع بايلود للتحكم بالجهاز.",how:["ثبّت Metasploit: wget https://raw.githubusercontent.com/Hax4us/Metasploit_termux/master/metasploit.sh","شغّل السكربت: chmod +x metasploit.sh && ./metasploit.sh","افتح الكونسول: msfconsole","استخدمه فقط على أنظمتك أنت!"],install:"wget https://raw.githubusercontent.com/Hax4us/Metasploit_termux/master/metasploit.sh && chmod +x metasploit.sh && ./metasploit.sh",example:"# تشغيل Metasploit\nmsfconsole",snippet_key:"tx_003_snip"},
-  {id:"tx_004",name:"Aircrack-ng",category:"تريمكس",desc:"أداة Aircrack-ng — كسر باسوردات الواي فاي (WPA/WPA2).",detailed:"Aircrack-ng يكسر باسوردات الواي فاي الضعيفة. يحتاج كارت واي فاي خارجي (ما يشتغل على معظم الهواتف).",how:["ثبّت Aircrack-ng: pkg install aircrack-ng","امسح الشبكات: airodump-ng wlan0mon","التقط handshake: airodump-ng -c [CHANNEL] --bssid [BSSID] -w capture wlan0mon","اكسر الباسورد: aircrack-ng -w passwords.txt capture-01.cap"],install:"pkg install aircrack-ng",example:"# عرض المساعدة\naircrack-ng --help",snippet_key:"tx_004_snip"},
-  {id:"tx_005",name:"John the Ripper",category:"تريمكس",desc:"أداة John the Ripper — كسر هاشات الباسورد.",detailed:"John the Ripper أداة كلاسيكية لكسر هاشات الباسورد. يدعم أنواعًا كثيرة من التشفير.",how:["ثبّت John: pkg install john","جهّز ملف الهاش: echo 'root:5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8' > hash.txt","اكسر الهاش: john hash.txt","اعرض النتائج: john --show hash.txt"],install:"pkg install john",example:"# كسر هاش\njohn hash.txt",snippet_key:"tx_005_snip"},
-  // ... (استمر بنفس النمط حتى 500 أداة تريمكس)
-];
+(function(){
+  // --- Curated tools: realistic, widely-used (defensive / dual-use) ---
+  const CURATED_TOOLS = [
+    // Network Recon & Scanning (use in lab / with permission)
+    {
+      id: "nmap",
+      name: "nmap",
+      category: "شبكة",
+      desc: "ماسح شبكة/منافذ قوي ومُستخدم عالمياً لأغراض الجرد والاكتشاف القانوني.",
+      detailed: "Nmap أداة للاطلاع على الأجهزة والخدمات الموجودة على شبكة لديك إذن بفحصها. تُستخدم لجرد الأجهزة، سياسات الجدار الناري، وخريطة الشبكة.",
+      how: [
+        "افتح مختبر محلي أو نطاق تملك إذنًا لاختباره.",
+        "ابدأ بأمر عرض النسخة: nmap --version",
+        "استخدم أوامر قراءة آمنة مثل -sL للائحة الهدف (لا تُجري مسحاً نشطاً خارج بيئتك)."
+      ],
+      install: "apt install nmap  # أو pacman/brew/pkg حسب التوزيعة",
+      example: "nmap --version",
+      snippet_ext: ".txt"
+    },
 
-// إنشاء SNIPPETS ديناميكيًا
-const SNIPPETS = {};
-TOOLS.forEach(t => {
-  const filename = t.category === "بايثون" ? `${t.name}.py` : `${t.name}.sh`;
-  SNIPPETS[t.snippet_key] = {
-    name: `مقتطف ${t.name}`,
-    filename: filename,
-    content: t.example
-  };
-});
+    {
+      id: "masscan",
+      name: "masscan",
+      category: "شبكة",
+      desc: "ماسح منافذ عالي الأداء—مناسب لاختبارات داخل مختبرات كبيرة عند الحاجة.",
+      detailed: "Masscan مفيد لمسوح الأداء العالية على شبكات مُصرّح بها. لا تستخدِم على شبكات لا تملك إذنًا لها.",
+      how: [
+        "استخدم Masscan فقط على بيئات اختبارية.",
+        "تحقق من الأمر --version ثم قرر سيناريو الاختبار داخل المختبر."
+      ],
+      install: "apt install masscan",
+      example: "masscan --version",
+      snippet_ext: ".txt"
+    },
 
-// عناصر DOM
-const grid = document.getElementById('grid');
-const search = document.getElementById('search');
-const btnAll = document.getElementById('btnAll');
-const btnPy = document.getElementById('btnPy');
-const btnTx = document.getElementById('btnTx');
-const modalBack = document.getElementById('modalBack');
-const modal = document.getElementById('modal');
-const mTitle = document.getElementById('mTitle');
-const mCategory = document.getElementById('mCategory');
-const mDetailed = document.getElementById('mDetailed');
-const mInstall = document.getElementById('mInstall');
-const mExample = document.getElementById('mExample');
-const mHow = document.getElementById('mHow');
-const downloadBtn = document.getElementById('downloadBtn');
-const copyInstall = document.getElementById('copyInstall');
-const copyExample = document.getElementById('copyExample');
-const closeModal = document.getElementById('closeModal');
+    // Packet capture & analysis
+    {
+      id: "tcpdump",
+      name: "tcpdump",
+      category: "تحليل الحزم",
+      desc: "أداة لالتقاط الحزم من واجهة شبكة لفهم البروتوكولات وحل المشكلات.",
+      detailed: "Tcpdump مفيد لالتقاط وتحليل الحركة التي تمر على الواجهة المحلية؛ يُستخدم بتحفظ لتحليل الحوادث داخل بيئة آمنة.",
+      how: [
+        "التقط إلى ملف محلي ثم افتحه باستخدام Wireshark: tcpdump -i <iface> -w out.pcap",
+        "افتح out.pcap داخل Wireshark على جهازك."
+      ],
+      install: "apt install tcpdump",
+      example: "tcpdump --version",
+      snippet_ext: ".txt"
+    },
 
-let currentFilter = 'all';
-let debounceTimer = null;
+    {
+      id: "wireshark",
+      name: "Wireshark",
+      category: "تحليل الحزم",
+      desc: "محلل حزم رسومي احترافي لقراءة pcap وتحليل البروتوكولات.",
+      detailed: "Wireshark يسمح بفحص الحزم بشكل بصري وتطبيق فلاتر، مثالي لتحليل شبكات داخلية ومشكلات الأداء.",
+      how: [
+        "التقط حركة ملفياً باستخدام tcpdump ثم افتح الملف عبر Wireshark.",
+        "استخدم فلاتر العرض مثل http أو dns لتحليل محدد."
+      ],
+      install: "apt install wireshark-qt  # أو حزمة Wireshark المناسبة",
+      example: "wireshark --version",
+      snippet_ext: ".txt"
+    },
 
-// بناء البطاقات
-function buildCards() {
-  const frag = document.createDocumentFragment();
-  TOOLS.forEach(t => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.setAttribute('data-id', t.id);
-    card.setAttribute('data-cat', t.category);
-    card.setAttribute('data-name', (t.name || '').toLowerCase());
-    card.setAttribute('data-desc', (t.desc || '').toLowerCase());
-    card.innerHTML = `
-      <div class="cat">${t.category}</div>
-      <div class="name">${t.name}</div>
-      <div class="desc">${t.desc}</div>
-      <div class="actions">
-        <button class="btn primary" data-action="details" data-id="${t.id}">تفاصيل</button>
-        <button class="btn" data-action="download" data-key="${t.snippet_key}">تحميل</button>
-      </div>
-    `;
-    frag.appendChild(card);
-  });
-  grid.appendChild(frag);
+    // IDS / Monitoring
+    {
+      id: "zeek",
+      name: "Zeek (Bro)",
+      category: "مراقبة",
+      desc: "محرك تحليل شبكة (شبكي) لإنتاج سجلات عالية المستوى وتحليل حركة المرور.",
+      detailed: "Zeek يُستخدم في المراقبة الشبكية وتحويل الحزم إلى دلائل وبيانات قابلة للتحليل، مناسب للـ SOC.",
+      how: [
+        "شغّل Zeek على نسخة pcap داخل بيئة تحليل محلية.",
+        "استعرض سجلات conn.log وhttp.log لتحليل الأنماط."
+      ],
+      install: "apt install zeek",
+      example: "zeek --version",
+      snippet_ext: ".txt"
+    },
 
-  // Event delegation
-  grid.addEventListener('click', (e) => {
-    const det = e.target.closest('button[data-action="details"]');
-    const dl = e.target.closest('button[data-action="download"]');
-    if (det) {
-      const id = det.getAttribute('data-id');
-      openToolById(id);
-      return;
-    }
-    if (dl) {
-      const key = dl.getAttribute('data-key');
-      if (key && SNIPPETS[key]) {
-        const blob = new Blob([SNIPPETS[key].content], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = SNIPPETS[key].filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      } else {
-        alert('لا يوجد مقتطف للتحميل لهذه الأداة.');
+    {
+      id: "suricata",
+      name: "Suricata",
+      category: "مراقبة",
+      desc: "محرك كشف/منع التسلل (IDS/IPS) مفتوح المصدر يُستخدم لمراقبة الشبكات.",
+      detailed: "Suricata قادر على تحليل الحركة واستخراج الإنذارات والـ EVE JSON logs للتشغيل مع أنظمة SIEM.",
+      how: [
+        "شغّل Suricata على واجهة اختبارية وقم بتحليل سجلات EVE JSON.",
+        "لا تُفعّل كـ IPS على شبكة إنتاج دون اختبار."
+      ],
+      install: "apt install suricata",
+      example: "suricata --version",
+      snippet_ext: ".txt"
+    },
+
+    // Web security (defensive/test lab)
+    {
+      id: "burp",
+      name: "Burp Suite (Community)",
+      category: "ويب",
+      desc: "بيئة اختبار تطبيقات الويب (تحليل الطلبات/الردود) — توجد نسخة Community مجانية.",
+      detailed: "Burp Suite مفيد لتحليل حركة الويب بين المتصفح والخادم داخل نطاقات اختبار. تجنّب اختباره على مواقع دون إذن.",
+      how: [
+        "افتح Burp في بيئة اختبار محلية وقم بتوجيه المتصفح عبر البروكسي.",
+        "استخدم أدوات المسح الآمنة واطَّلع على الاستجابات فقط."
+      ],
+      install: "قم بتنزيل Burp Community من الموقع الرسمي وتثبيته محليًا",
+      example: "افتح Burp Suite GUI وتحقق من النسخة داخل Help → About",
+      snippet_ext: ".txt"
+    },
+
+    {
+      id: "nikto",
+      name: "Nikto",
+      category: "ويب",
+      desc: "ماسح تطبيقات ويب يُظهر إعدادات عامة ومشكلات معروفة — للاختبار القانوني فقط.",
+      detailed: "Nikto يعرض رؤى عن رؤوس السيرفر، وملفات تكوين غير آمنة، ومشكلات معروفة؛ لا تستخدمه خارج نطاقك.",
+      how: [
+        "استخدمه على بيئة تطوير محلية أو نسخة اختبار لموقعك.",
+        "ابدأ بعرض النسخة: nikto -Version"
+      ],
+      install: "apt install nikto",
+      example: "nikto -Version",
+      snippet_ext: ".txt"
+    },
+
+    {
+      id: "sqlmap",
+      name: "sqlmap",
+      category: "ويب",
+      desc: "أداة لاختبار ثغرات SQL Injection — مزدوجة الاستخدام، استخدمها فقط على تطبيقات لديك إذن لفحصها.",
+      detailed: "sqlmap قوية لاختبار إدخالات SQL؛ توفر أتمتة متقدمة لكن استعمالها خارج بيئة مرخّصة مخالف للقانون.",
+      how: [
+        "استخدم sqlmap على تطبيق اختبار محلي مع حقل إدخال لاختبار سلوك الاستعلامات.",
+        "ابدأ بعرض --version للتحقق."
+      ],
+      install: "apt install sqlmap",
+      example: "sqlmap --version",
+      snippet_ext: ".txt"
+    },
+
+    // Passwords & Cracking (legal use: audit your own hashes)
+    {
+      id: "hashcat",
+      name: "hashcat",
+      category: "تحليل كلمات المرور",
+      desc: "محرك تسريع كسر تجزئات كلمات المرور — استخدمه لتحليل قوة كلمات المرور لديك فقط.",
+      detailed: "Hashcat أداة GPU-accelerated لكسر التجزئات؛ صالح لتحليل أمان كلمات المرور في بيئة واختبار داخلية فقط.",
+      how: [
+        "اختبر على ملف تجزئات خاص بك أو على نسخ اختبارية.",
+        "ابدأ بفحص معلومات النسخة: hashcat --version"
+      ],
+      install: "راجع التثبيت الرسمي (قد يتطلب تعريفات GPU)",
+      example: "hashcat --version",
+      snippet_ext: ".txt"
+    },
+
+    {
+      id: "john",
+      name: "John the Ripper",
+      category: "تحليل كلمات المرور",
+      desc: "أداة فحص كلمات المرور تُستخدم لاختبار قوة كلمات المرور المحلية.",
+      detailed: "John مناسب لتحليل ملفات كلمة مرور مسموح بوصولك إليها؛ تجنّب الاستخدام على بيانات طرف ثالث.",
+      how: [
+        "استخرج hashes من بيئة اختبارية ثم شغّل john محليًا.",
+        "راجع john --test و --version قبل التشغيل."
+      ],
+      install: "apt install john",
+      example: "john --test",
+      snippet_ext: ".txt"
+    },
+
+    // Forensics & Memory analysis
+    {
+      id: "volatility",
+      name: "Volatility",
+      category: "تحقيق جنائي",
+      desc: "إطار عمل لتحليل ذاكرة RAM لأغراض التحقيق الجنائي الرقمي.",
+      detailed: "Volatility يُستخدم لاسترداد العمليات، الشبكات، والشبكات المخفية من dump الذاكرة؛ مهم في الاستجابة للحوادث.",
+      how: [
+        "التقط صورة الذاكرة باستخدام أدوات موثوقة ثم حلّلها محليًا.",
+        "ابدأ بعرض النسخة: volatility --version"
+      ],
+      install: "pip install volatility3  # أو اتبع دليل التثبيت",
+      example: "volatility --info",
+      snippet_ext: ".txt"
+    },
+
+    {
+      id: "velociraptor",
+      name: "Velociraptor",
+      category: "تحقيق جنائي",
+      desc: "أداة استجابة للحوادث وجمع أدلة (endpoint visibility) لإدارة الحوادث وتحليل السجل.",
+      detailed: "Velociraptor يُستخدم لجمع telemetry من أجهزة مرخصة وتحليلها مركزيًا في SOC.",
+      how: [
+        "نشر في بيئة اختباريّة لالتقاط telemetry وتحليلها.",
+        "راجع الوثائق الرسمية لطرق التشغيل الآمن."
+      ],
+      install: "راجع الوثائق الرسمية: velociraptor.dev",
+      example: "velociraptor --version",
+      snippet_ext: ".txt"
+    },
+
+    // Binary analysis / reverse engineering
+    {
+      id: "ghidra",
+      name: "Ghidra",
+      category: "تحليل ثنائي",
+      desc: "بيئة تحليل ثنائي مفتوحة المصدر من NSA، مفيدة لهندسة عكسية للبرامج في بيئة قانونية.",
+      detailed: "Ghidra يساعد في تحليل الثنائيات وفهم بنية البرامج—مفيد للباحثين في الأمن الرقمي والتحليل الجنائي.",
+      how: [
+        "استخدم ملفات ثنائية محلية (firmware أو sample) في بيئة معزولة.",
+        "افتح الملف داخل Ghidra وابدأ تحليل الوظائف statically."
+      ],
+      install: "نزّل من الموقع الرسمي وفك الضغط — يستخدم Java.",
+      example: "تشغيل Ghidra GUI (لا يوجد --version ثابت على CLI عادة)",
+      snippet_ext: ".txt"
+    },
+
+    {
+      id: "radare2",
+      name: "radare2",
+      category: "تحليل ثنائي",
+      desc: "أداة تحليل ثنائي متقدمة وسطر أوامر لتحليل البرامج محليًا.",
+      detailed: "radare2 مناسبة للباحثين وتوفّر أدوات تفكيك، تحليل التحكم، وتحرّي البينات.",
+      how: [
+        "افتح الملف محليًا: r2 <binary>",
+        "استعمل الأوامر الآمنة لعرض الرموز دون تنفيذ."
+      ],
+      install: "apt install radare2",
+      example: "r2 -v",
+      snippet_ext: ".txt"
+    },
+
+    // Malware analysis (defensive)
+    {
+      id: "cuckoo",
+      name: "Cuckoo Sandbox",
+      category: "تحليل برمجيات خبيثة",
+      desc: "منصة آلية لتحليل سلوك البرمجيات في بيئة معزولة (sandbox) — لأغراض دفاعية وبحوث.",
+      detailed: "Cuckoo يسمح بتشغيل العينات في بيئة منعزلة وملاحظة السلوك، الشبكات والملفات المحدثة—مهم لتحليل الحوادث.",
+      how: [
+        "نَشِّئ بيئة معزولة تمامًا (VM) قبل تشغيل أي عينة.",
+        "لا تشغّل عيّنات حقيقية على مضيفك الرئيسي."
+      ],
+      install: "راجع الدليل الرسمي لإعداد Cuckoo في VM معزول",
+      example: "cuckoo --version (أو استعمل CLI المرفق)",
+      snippet_ext: ".txt"
+    },
+
+    // OSINT & passive recon (legal)
+    {
+      id: "theharvester",
+      name: "theHarvester",
+      category: "OSINT",
+      desc: "أداة لجمع معلومات عامة (email,hosts) من مصادر عامة لأغراض استخباراتية مشروعة.",
+      detailed: "theHarvester يساعد على جمع معلومات من مصادر مفتوحة بشكل قانوني لنطاقات تملكها أو لديك إذن فحصها.",
+      how: [
+        "ابدأ بالبحث عن نطاقاتك الخاصة أو نطاق اختبار.",
+        "استخدم --help للتحقق من المحركات المتاحة."
+      ],
+      install: "apt install theharvester",
+      example: "theHarvester --version",
+      snippet_ext: ".txt"
+    },
+
+    // Endpoint & logging (defensive)
+    {
+      id: "osquery",
+      name: "osquery",
+      category: "نظام/مراقبة",
+      desc: "محرك استعلام لأنظمة التشغيل يسمح بسحب معلومات تقنية كقواعد SQL — مفيد للمراقبة.",
+      detailed: "Osquery يتيح تحويل الحالة التشغيلية للـ endpoints إلى جداول قابلة للاستعلام بسهولة ضمن بنية SIEM.",
+      how: [
+        "نشر على أجهزة داخل مختبر لاستخراج telemetry بصيغة SQL-like.",
+        "ابدأ بتشغيل osqueryi للتجربة المحلية."
+      ],
+      install: "راجع الوثائق الرسمية: osquery.io",
+      example: "osqueryi --version",
+      snippet_ext: ".txt"
+    },
+
+    // Additional common defensive tools
+    { id: "sslyze", name: "SSLyze", category: "TLS", desc: "محلل TLS/SSL لفحص قدرات التشفير (للتحقق من الخوادم التي تملكها).", detailed: "استخدم لفحص خوادمك الخاصة فقط.", how:["ابدأ بـ sslyze --version"], install:"pip install sslyze", example:"sslyze --version", snippet_ext:".txt" },
+    { id: "sslscan", name: "sslscan", category: "TLS", desc: "أداة عرض قدرات SSL/TLS للمضيف (استخدمها على خوادمك).", detailed:"مفيد لتحليل إعدادات التشفير.", how:["راجع --version أولاً"], install:"apt install sslscan", example:"sslscan --version", snippet_ext:".txt" },
+    { id: "mitmproxy", name: "mitmproxy", category: "ويب", desc: "وكيل HTTP تفاعلي لتحليل حركة الويب داخل بيئات الاختبار.", detailed:"مناسب لتحليل الطلبات داخل بيئة آمنة.", how:["شغّل mitmproxy محلياً واستخدم مستعرض مكوّن ليعمل عبره."], install:"pip install mitmproxy", example:"mitmproxy --version", snippet_ext:".txt" },
+    { id: "gdb", name: "gdb", category: "تحليل ثنائي", desc: "مصحح برمجيات لبدء تتبع محلي لبرامجك وتصحيحها.", detailed:"جيد لتحليل سلوك البرامج في بيئة اختبار.", how:["استخدم gdb مع ملفات ثنائية محلية."], install:"apt install gdb", example:"gdb --version", snippet_ext:".txt" },
+    { id: "yara", name: "YARA", category: "تحليل", desc: "أداة لتوصيف واكتشاف عينات برامج ضارة بناءً على قواعد نصية.", detailed:"استخدم YARA لمطابقة العينات داخل مختبرك.", how:["ابدأ بكتابة قواعد بسيطة وتشغيل yara -r"], install:"apt install yara", example:"yara --version", snippet_ext:".txt" },
+    { id: "clamav", name: "ClamAV", category: "تحليل", desc: "مضاد فيروسات مفتوح المصدر لتحليل الملفات محليًا.", detailed:"مفيد كأداة إضافية لتحليل العينات داخل بيئة آمنة.", how:["قم بتحديث قواعد الفيروسات قبل الفحص: freshclam"], install:"apt install clamav", example:"clamscan --version", snippet_ext:".txt" },
+  ];
+
+  // --- UI bindings & behavior (reuse previous rendering logic but with CURATED_TOOLS) ---
+  const ALL_TOOLS = CURATED_TOOLS; // replace earlier generator
+  const grid = document.getElementById('grid');
+  const searchInput = document.getElementById('search');
+  const btnAll = document.getElementById('btnAll');
+  const btnPy = document.getElementById('btnPy');
+  const btnTx = document.getElementById('btnTx');
+  const modalBack = document.getElementById('modalBack');
+  const modal = document.getElementById('modal');
+  const mTitle = document.getElementById('mTitle');
+  const mMeta = document.getElementById('mMeta');
+  const mDetailed = document.getElementById('mDetailed');
+  const mInstall = document.getElementById('mInstall');
+  const mExample = document.getElementById('mExample');
+  const mHow = document.getElementById('mHow');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const copyInstall = document.getElementById('copyInstall');
+  const copyExample = document.getElementById('copyExample');
+  const closeModalBtn = document.getElementById('closeModal');
+
+  let currentFilter = 'all';
+  let debounce = null;
+
+  function buildCards(){
+    grid.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    ALL_TOOLS.forEach(t=>{
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.setAttribute('data-id', t.id);
+      el.setAttribute('data-cat', t.category);
+      el.setAttribute('data-name', (t.name||'').toLowerCase());
+      el.setAttribute('data-desc', (t.desc||'').toLowerCase());
+      el.innerHTML = `
+        <div class="cat">${t.category}</div>
+        <div class="name">${t.name}</div>
+        <div class="desc">${t.desc}</div>
+        <div class="actions">
+          <button class="btn primary" data-action="details" data-id="${t.id}">تفاصيل</button>
+          <button class="btn" data-action="download" data-id="${t.id}">تحميل</button>
+        </div>
+      `;
+      frag.appendChild(el);
+    });
+    grid.appendChild(frag);
+
+    // delegate clicks
+    grid.addEventListener('click', function(e){
+      const det = e.target.closest('button[data-action="details"]');
+      const dl = e.target.closest('button[data-action="download"]');
+      if(det){
+        openModalById(det.getAttribute('data-id'));
+      } else if(dl){
+        const id = dl.getAttribute('data-id');
+        downloadSnippetById(id);
       }
-    }
-  });
-}
-
-// تطبيق الفلاتر والبحث
-function applyFilters() {
-  const q = (search.value || '').toLowerCase().trim();
-  const cards = grid.querySelectorAll('.card');
-  let visible = 0;
-  cards.forEach(c => {
-    const name = c.getAttribute('data-name') || '';
-    const desc = c.getAttribute('data-desc') || '';
-    const cat = c.getAttribute('data-cat') || '';
-    const inFilter = (currentFilter === 'all' || currentFilter === cat);
-    const matches = (!q || name.includes(q) || desc.includes(q));
-    if (inFilter && matches) {
-      c.style.display = 'block';
-      visible++;
-    } else {
-      c.style.display = 'none';
-    }
-  });
-  return visible;
-}
-
-// فتح تفاصيل الأداة
-function openToolById(id) {
-  const t = TOOLS.find(x => x.id === id);
-  if (!t) return;
-  mTitle.innerText = t.name;
-  mCategory.innerText = 'الفئة: ' + t.category;
-  mDetailed.innerText = t.detailed || t.desc || '';
-  mInstall.innerText = t.install || '—';
-  mExample.innerText = t.example || '—';
-  mHow.innerHTML = '';
-  if (Array.isArray(t.how)) {
-    t.how.forEach((step, idx) => {
-      const div = document.createElement('div');
-      div.className = 'step';
-      div.innerText = `${idx + 1}. ${step}`;
-      mHow.appendChild(div);
     });
   }
-  downloadBtn.onclick = () => {
-    const sk = t.snippet_key;
-    if (sk && SNIPPETS[sk]) {
-      const blob = new Blob([SNIPPETS[sk].content], { type: 'text/plain' });
+
+  function applyFilters(){
+    const q = (searchInput.value||'').toLowerCase().trim();
+    const cards = grid.querySelectorAll('.card');
+    cards.forEach(c=>{
+      const name = c.getAttribute('data-name') || '';
+      const desc = c.getAttribute('data-desc') || '';
+      const cat = c.getAttribute('data-cat') || '';
+      const inFilter = (currentFilter === 'all' || currentFilter === cat);
+      const matches = (!q || name.includes(q) || desc.includes(q));
+      c.style.display = (inFilter && matches) ? 'block' : 'none';
+    });
+  }
+
+  function openModalById(id){
+    const t = ALL_TOOLS.find(x=>x.id===id);
+    if(!t) return;
+    mTitle.innerText = t.name;
+    document.getElementById('mMeta').innerText = `الفئة: ${t.category}`;
+    mDetailed.innerText = t.detailed || t.desc || '';
+    mInstall.innerText = t.install || '—';
+    mExample.innerText = t.example || '—';
+    mHow.innerHTML = '';
+    if(Array.isArray(t.how)) t.how.forEach((s,i)=>{
+      const div = document.createElement('div');
+      div.className = 'step';
+      div.innerText = `${i+1}. ${s}`;
+      mHow.appendChild(div);
+    });
+    downloadBtn.onclick = ()=> {
+      const filename = t.name + (t.snippet_ext || '.txt');
+      const content = (t.example || '') + '\n';
+      const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = SNIPPETS[sk].filename;
+      a.href = url; a.download = filename;
       document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } else {
-      alert('لا يوجد مقتطف للتحميل لهذه الأداة.');
-    }
-  };
-  copyInstall.onclick = () => copyToClipboard(t.install || '');
-  copyExample.onclick = () => copyToClipboard(t.example || '');
-  modalBack.style.display = 'flex';
-  setTimeout(() => modal.classList.add('show'), 20);
-}
+      a.click(); a.remove(); URL.revokeObjectURL(url);
+    };
+    copyInstall.onclick = ()=> copyToClipboard(t.install || '');
+    copyExample.onclick = ()=> copyToClipboard(t.example || '');
+    modalBack.style.display = 'flex';
+    setTimeout(()=> modal.classList.add('show'), 20);
+  }
 
-// إغلاق المودال
-closeModal.addEventListener('click', () => {
-  modal.classList.remove('show');
-  setTimeout(() => modalBack.style.display = 'none', 180);
-});
-modalBack.addEventListener('click', (e) => {
-  if (e.target === modalBack) closeModal.click();
-});
+  function downloadSnippetById(id){
+    const t = ALL_TOOLS.find(x=>x.id===id);
+    if(!t) return;
+    const filename = t.name + (t.snippet_ext || '.txt');
+    const content = (t.example || '') + '\n';
+    const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a);
+    a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
 
-// أزرار الفلترة
-function setActiveButton(btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
-btnAll.addEventListener('click', () => { currentFilter = 'all'; setActiveButton(btnAll); applyFilters(); });
-btnPy.addEventListener('click', () => { currentFilter = 'بايثون'; setActiveButton(btnPy); applyFilters(); });
-btnTx.addEventListener('click', () => { currentFilter = 'تريمكس'; setActiveButton(btnTx); applyFilters(); });
+  function copyToClipboard(text){
+    if(!text){ alert('لا يوجد نص للنسخ'); return; }
+    navigator.clipboard.writeText(text).then(()=> alert('تم النسخ إلى الحافظة')).catch(()=> alert('فشل النسخ — انسخ يدوياً'));
+  }
 
-// البحث مع debounce
-search.addEventListener('input', () => {
-  if (debounceTimer) clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => { applyFilters(); }, 120);
-});
+  // keyboard shortcuts
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === '1'){ btnAll.click(); }
+    if(e.key === '2'){ btnPy.click(); }
+    if(e.key === '3'){ btnTx.click(); }
+    if(e.key === '/'){ e.preventDefault(); searchInput.focus(); }
+    if(e.key === 'Escape'){ modal.classList.remove('show'); setTimeout(()=> modalBack.style.display='none',180); }
+  });
 
-// اختصارات لوحة المفاتيح
-document.addEventListener('keydown', (e) => {
-  if (e.key === '1') { btnAll.click(); }
-  if (e.key === '2') { btnPy.click(); }
-  if (e.key === '3') { btnTx.click(); }
-  if (e.key === '/') { e.preventDefault(); search.focus(); }
-  if (e.key === 'Escape') { closeModal.click(); }
-});
+  // init
+  document.addEventListener('DOMContentLoaded', function(){
+    buildCards();
+    applyFilters();
+    btnAll.addEventListener('click', ()=>{ currentFilter='all'; setActive(btnAll); applyFilters(); });
+    btnPy.addEventListener('click', ()=>{ currentFilter='بايثون'; setActive(btnPy); applyFilters(); });
+    btnTx.addEventListener('click', ()=>{ currentFilter='تريمكس'; setActive(btnTx); applyFilters(); });
+    function setActive(el){ document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
+    searchInput.addEventListener('input', function(){ if(debounce) clearTimeout(debounce); debounce = setTimeout(()=> applyFilters(), 120); });
+    document.getElementById('closeModal').addEventListener('click', ()=>{ modal.classList.remove('show'); setTimeout(()=> modalBack.style.display='none',180); });
+    modalBack.addEventListener('click', (e)=>{ if(e.target === modalBack){ modal.classList.remove('show'); setTimeout(()=> modalBack.style.display='none',180); } });
+    console.log('Curated tools loaded:', ALL_TOOLS.length);
+  });
 
-// نسخ إلى الحافظة
-function copyToClipboard(text) {
-  if (!text) return alert('لا يوجد نص للنسخ');
-  navigator.clipboard.writeText(text).then(() => alert('تم النسخ إلى الحافظة')).catch(() => alert('فشل النسخ — انسخ يدويًا'));
-}
-
-// بدء التشغيل
-document.addEventListener('DOMContentLoaded', () => {
-  buildCards();
-  applyFilters();
-});
+})();
