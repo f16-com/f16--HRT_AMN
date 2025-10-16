@@ -1,101 +1,138 @@
-/* app.js
-   قاعدة أدوات مُولّدة: 1000 أداة (500 بايثون + 500 تريمكس)
-   كل أداة: id, name, category, desc, detailed, how[], install, example, snippet_ext
-   يعرض الموقع دفعات لعدم تحميل DOM كله مرة واحدة (أداء أفضل).
-*/
-
+/* app.js — واجهة الأدوات (1000 أداة)، فلترة، بحث، مودال، تنزيل مقتطف آمن */
 (function(){
-  // -------------------------
-  // small helper randomizers for descriptive text
-  // -------------------------
+  // ---------- Helpers ----------
   function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function esc(s){ return s.replaceAll('"','\\"'); }
 
+  // ---------- curated real tool names (defensive descriptions) ----------
+  // A curated set of well-known security tools — descriptions are defensive/educational.
+  const CURATED = [
+    // network & scanning
+    {id:'nmap', name:'nmap', category:'شبكة', kind:'real', install:'apt install nmap', example:'nmap --version'},
+    {id:'masscan', name:'masscan', category:'شبكة', kind:'real', install:'apt install masscan', example:'masscan --version'},
+    {id:'tcpdump', name:'tcpdump', category:'تحليل الحزم', kind:'real', install:'apt install tcpdump', example:'tcpdump --version'},
+    {id:'wireshark', name:'wireshark', category:'تحليل الحزم', kind:'real', install:'apt install wireshark', example:'wireshark --version'},
+    {id:'tshark', name:'tshark', category:'تحليل الحزم', kind:'real', install:'apt install tshark', example:'tshark --version'},
+    // web / appsec
+    {id:'nikto', name:'nikto', category:'ويب', kind:'real', install:'apt install nikto', example:'nikto -Version'},
+    {id:'sqlmap', name:'sqlmap', category:'ويب', kind:'real', install:'apt install sqlmap', example:'sqlmap --version'},
+    {id:'burpsuite', name:'burpsuite', category:'ويب', kind:'real', install:'# download Burp Suite', example:'open Burp GUI'},
+    {id:'ffuf', name:'ffuf', category:'ويب', kind:'real', install:'apt install ffuf', example:'ffuf -h'},
+    {id:'gobuster', name:'gobuster', category:'ويب', kind:'real', install:'apt install gobuster', example:'gobuster -h'},
+    // passwords & cracking
+    {id:'hashcat', name:'hashcat', category:'كلمات المرور', kind:'real', install:'see docs (GPU drivers may be required)', example:'hashcat --version'},
+    {id:'john', name:'john', category:'كلمات المرور', kind:'real', install:'apt install john', example:'john --test'},
+    {id:'hydra', name:'hydra', category:'كلمات المرور', kind:'real', install:'apt install hydra', example:'hydra --version'},
+    // forensics & memory
+    {id:'volatility', name:'volatility', category:'تحقيق جنائي', kind:'real', install:'pip install volatility3', example:'volatility --info'},
+    {id:'sleuthkit', name:'sleuthkit', category:'تحقيق جنائي', kind:'real', install:'apt install sleuthkit', example:'fls -V'},
+    // reverse engineering
+    {id:'ghidra', name:'ghidra', category:'تحليل ثنائي', kind:'real', install:'# download Ghidra', example:'open Ghidra GUI'},
+    {id:'radare2', name:'radare2', category:'تحليل ثنائي', kind:'real', install:'apt install radare2', example:'r2 -v'},
+    {id:'gdb', name:'gdb', category:'تحليل ثنائي', kind:'real', install:'apt install gdb', example:'gdb --version'},
+    // monitoring / endpoint
+    {id:'osquery', name:'osquery', category:'مراقبة', kind:'real', install:'see osquery docs', example:'osqueryi --version'},
+    {id:'velociraptor', name:'velociraptor', category:'مراقبة', kind:'real', install:'# see docs', example:'velociraptor --version'},
+    {id:'suricata', name:'suricata', category:'مراقبة', kind:'real', install:'apt install suricata', example:'suricata --version'},
+    {id:'zeek', name:'zeek', category:'مراقبة', kind:'real', install:'apt install zeek', example:'zeek --version'},
+    // malware analysis / sandbox
+    {id:'cuckoo', name:'cuckoo', category:'تحليل برمجيات خبيثة', kind:'real', install:'# see Cuckoo docs', example:'cuckoo --version'},
+    {id:'yara', name:'yara', category:'تحليل', kind:'real', install:'apt install yara', example:'yara --version'},
+    {id:'clamav', name:'clamav', category:'تحليل', kind:'real', install:'apt install clamav', example:'clamscan --version'},
+    // OSINT & tools
+    {id:'theharvester', name:'theHarvester', category:'OSINT', kind:'real', install:'apt install theharvester', example:'theHarvester --version'},
+    {id:'shodan', name:'shodan', category:'OSINT', kind:'real', install:'pip install shodan', example:'shodan --help'},
+    {id:'amass', name:'amass', category:'OSINT', kind:'real', install:'apt install amass', example:'amass -version'},
+    // proxies / intercept
+    {id:'mitmproxy', name:'mitmproxy', category:'ويب', kind:'real', install:'pip install mitmproxy', example:'mitmproxy --version'},
+    {id:'burp', name:'burp', category:'ويب', kind:'real', install:'# download Burp', example:'open Burp GUI'}
+  ];
+
+  // ---------- Generators for additional entries ----------
   const pyPurposes = [
-    "تحليل ملفات pcap محليًا",
-    "أتمتة إدارة السيرفرات داخل بيئة اختبارية",
-    "تحليل سجلات النظام والتطبيق",
-    "نمذجة بيانات لاكتشاف نمط الهجوم",
-    "أداة لاختبارات تحميل داخل المختبر",
-    "تحليل رسائل HTTP/REST محليًا"
+    "تحليل pcap محلي", "نمذجة سجلات", "أتمتة SSH داخل المختبر",
+    "فحص الشهادات TLS/SSL محليًا", "تحليل أداء خدمات محلية"
   ];
-  const pyUsecases = [
-    "مفيد لتحليل بيانات شبكة مملوكة لك",
-    "يُستخدم لاستخراج رؤى من سجلات محلية",
-    "مثالي لتجارب أمنية داخل مختبر مغلق",
-    "قابل للتطوير للتعلم وبناء قواعد كشف مبدئية"
-  ];
-
   const txPurposes = [
-    "فحص منافذ محلي داخل Termux",
-    "التقاط حزم على واجهة محلية للتشخيص",
-    "أدوات واي-فاي تعليمية (مختبر)",
-    "أدوات مساعدة لإدارة الشبكات على الأجهزة المحمولة",
-    "عمل تقارير تشخيصية للشبكة المحلية"
+    "فحص منافذ محلي", "التقاط حزم تشخيصي", "أدوات واي-فاي تعليمية", "تحليل DNS محلي"
   ];
-  const txUsecases = [
-    "شغّلها على جهازك داخل Termux لاختبار محلي",
-    "ابدأ دائمًا بـ --help أو --version قبل الفحص",
-    "مناسبة لتعليم أساسيات الشبكات داخليًا"
+  const useCases = [
+    "تشغيل داخل مختبر معزول", "تحليل ملفات محلية فقط", "تعلم سلوك الشبكة في بيئة اختبار"
   ];
 
-  // -------------------------
-  // Build arrays programmatically
-  // -------------------------
+  // ---------- Build ALL_TOOLS (1000) ----------
   const ALL_TOOLS = [];
 
+  // Add curated real tools first (unique)
+  CURATED.forEach((t, idx)=>{
+    const detailed = `${t.name} — أداة معروفة في المجال.\n\nالوصف: ${t.name} تستخدم لأغراض تحليلية ودفاعية. ${t.kind==='real' ? 'استخدمها داخل بيئتك التي تملك إذناً لفحصها.' : ''}`;
+    const how = [
+      "ابدأ بعرض النسخة: --version أو --help",
+      "اجمع نتائج محليًا وحللها داخل مختبرك",
+      "لا تستخدم على شبكات أو أنظمة بدون إذن"
+    ];
+    ALL_TOOLS.push({
+      id: t.id,
+      name: t.name,
+      category: (t.category==='شبكة' || t.category==='تحليل الحزم') ? (t.category) : (t.category || 'بايثون'),
+      desc: `${t.category} — أداة مشهورة ومزدوجة الاستخدام (تعليمية/تحليلية).`,
+      detailed,
+      how,
+      install: t.install || '# راجع الوثائق',
+      example: t.example || '# --version',
+      snippet_ext: t.example && t.example.includes('.sh') ? '.sh' : '.txt'
+    });
+  });
+
+  // fill up to 500 python-like tools (py_tool_001 .. )
   for(let i=1;i<=500;i++){
     const name = `py_tool_${String(i).padStart(3,'0')}`;
     const purpose = pick(pyPurposes);
-    const usecase = pick(pyUsecases);
-    const detailed = `أداة بايثون ${i} — ${name}\n\nالغرض: ${purpose}.\nاستخدام نموذجي: ${usecase}.\nالقيود: هذه أداة تعليمية — شغّلها على ملفات محلية أو ضمن بيئة اختبار أنت تملك إذنها.`;
+    const usecase = pick(useCases);
+    const detailed = `أداة بايثون ${name}\n\nالغرض: ${purpose}.\nاستخدام نموذجي: ${usecase}.\nالقيود: شغّلها داخل بيئة اختبار تملك إذنًا.`;
     const how = [
-      "أنشئ بيئة افتراضية: python -m venv venv && source venv/bin/activate",
-      "ثبت الاعتمادات داخل المختبر فقط إذا لزم: pip install <package>",
-      "حمّل المقتطف الآمن ونفّذه: python <snippet>.py",
-      "راجع المخرجات وجرب تعديل بيانات الإدخال محليًا"
+      "انشئ venv ثم فعل البيئة",
+      "ثبت المكتبات داخل المختبر فقط",
+      "شغّل المقتطف الآمن: python <snippet>.py"
     ];
-    const example = `# ${name}.py — مثال آمن\nprint("تشغيل آمن: ${name}")\n`;
     ALL_TOOLS.push({
-      id: `py_${String(i).padStart(3,'0')}`,
+      id: `py_${String(1000+i)}`, // unique id (avoid colliding with curated)
       name,
-      category: "بايثون",
-      desc: `${purpose} — مصممة للاستخدام التعليمي والتشخيصي.`,
+      category: 'بايثون',
+      desc: `${purpose} — أداة تعليمية/تشخيصية.`,
       detailed,
       how,
-      install: `pip install ${name}  # مثال افتراضي — تحقق من المستودع الفعلي`,
-      example,
-      snippet_ext: ".py"
+      install: `pip install ${name}  # مثال افتراضي`,
+      example: `# ${name}.py\nprint("مثال آمن: ${name}")\n`,
+      snippet_ext: '.py'
     });
   }
 
+  // fill up to 500 termux-like tools
   for(let i=1;i<=500;i++){
     const name = `tx_tool_${String(i).padStart(3,'0')}`;
     const purpose = pick(txPurposes);
-    const usecase = pick(txUsecases);
-    const detailed = `أداة Termux ${i} — ${name}\n\nالغرض: ${purpose}.\nاستخدام نموذجي: ${usecase}.\nالقيود: مثال تعليمي — لا تشغّل على شبكات أو أجهزة بدون إذن.`;
+    const usecase = pick(useCases);
+    const detailed = `أداة Termux ${name}\n\nالغرض: ${purpose}.\nاستخدام نموذجي: ${usecase}.\nالقيود: مثال تعليمي — لا تستخدمها ضد أنظمة بدون إذن.`;
     const how = [
-      "افتح Termux أو شيل محلي على جهازك",
-      "ابدأ بالأمر: --version أو --help قبل أي اختبار",
-      "شغّل الأداة على localhost أو بيئة اختبارية",
-      "حلّل الناتج محليًا داخل بيئة آمنة"
+      "ابدأ بـ --help أو --version",
+      "شغّل على جهازك داخل Termux أو شيل محلي",
+      "حلّل المخرجات محليًا داخل بيئة آمنة"
     ];
-    const example = `#!/usr/bin/env bash\necho "تشغيل آمن: ${name} --version"\n`;
     ALL_TOOLS.push({
-      id: `tx_${String(i).padStart(3,'0')}`,
+      id: `tx_${String(2000+i)}`,
       name,
-      category: "تريمكس",
-      desc: `${purpose} — للاستخدام التعليمي والتشخيصي.`,
+      category: 'تريمكس',
+      desc: `${purpose} — أداة تعليمية/تشخيصية.`,
       detailed,
       how,
-      install: `pkg install ${name}  # تأكد من اسم الحزمة في مستودعك`,
-      example,
-      snippet_ext: ".sh"
+      install: `pkg install ${name}  # تحقق من اسم الحزمة`,
+      example: `#!/usr/bin/env bash\necho "مثال آمن: ${name} --version"\n`,
+      snippet_ext: '.sh'
     });
   }
 
-  // -------------------------
-  // UI & rendering
-  // -------------------------
+  // ---------- UI & rendering ----------
   const grid = document.getElementById('grid');
   const searchInput = document.getElementById('searchInput');
   const btnAll = document.getElementById('btnAll');
@@ -118,11 +155,10 @@
   const closeModal = document.getElementById('closeModal');
 
   let currentFilter = 'all';
-  let renderedCount = 0;
-  const CHUNK = 100; // عدد الأدوات لكل دفعة
+  let renderedIndex = 0;
+  const CHUNK = 100;
   totalCountEl.innerText = ALL_TOOLS.length;
 
-  // create card element
   function createCard(t){
     const div = document.createElement('div');
     div.className = 'card';
@@ -142,66 +178,27 @@
     return div;
   }
 
-  function loadMore(){
+  function appendNextChunk(){
     let added = 0;
     const q = (searchInput.value||'').toLowerCase().trim();
-    for(let i=renderedCount;i<ALL_TOOLS.length && added<CHUNK;i++){
+    for(let i=renderedIndex; i<ALL_TOOLS.length && added<CHUNK; i++){
       const t = ALL_TOOLS[i];
       const inFilter = (currentFilter==='all' || currentFilter===t.category);
-      const matches = (!q || (t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q)));
+      const matches = (!q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q));
       if(inFilter && matches){
         grid.appendChild(createCard(t));
-        added++; renderedCount++;
-      } else {
-        renderedCount++;
-        i--; // ensure we still try next until we add CHUNK items (but careful with performance)
-        // To avoid complex skipping logic, simpler approach: break and rely on applyFilters to reset rendering
-        // For simplicity here, we accept that CHUNK is best-effort in current filter state.
-        break;
+        added++;
       }
+      renderedIndex = i+1;
     }
-    if(renderedCount >= ALL_TOOLS.length) loadMoreBtn.style.display = 'none';
+    if(renderedIndex >= ALL_TOOLS.length) loadMoreBtn.style.display = 'none';
   }
 
-  // Simpler rendering strategy: when filter/search changes, clear and show first CHUNK matching items
-  function renderInitial(){
+  function resetAndRender(){
     grid.innerHTML = '';
-    renderedCount = 0;
-    const q = (searchInput.value||'').toLowerCase().trim();
-    let added = 0;
-    for(let i=0;i<ALL_TOOLS.length && added<CHUNK;i++){
-      const t = ALL_TOOLS[i];
-      const inFilter = (currentFilter==='all' || currentFilter===t.category);
-      const matches = (!q || (t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q)));
-      if(inFilter && matches){
-        grid.appendChild(createCard(t));
-        added++;
-      }
-    }
-    // set renderedCount to index of last appended + 1 for next load
-    renderedCount = added;
-    loadMoreBtn.style.display = (renderedCount < ALL_TOOLS.length) ? 'inline-block' : 'none';
-  }
-
-  // smarter loadMore: append next CHUNK matching items
-  function loadMoreSmart(){
-    let added = 0;
-    const q = (searchInput.value||'').toLowerCase().trim();
-    for(let i=0;i<ALL_TOOLS.length && added<CHUNK;i++){
-      // skip those already shown
-      if(i < renderedCount) continue;
-      const t = ALL_TOOLS[i];
-      const inFilter = (currentFilter==='all' || currentFilter===t.category);
-      const matches = (!q || (t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q)));
-      if(inFilter && matches){
-        grid.appendChild(createCard(t));
-        added++;
-        renderedCount = i+1;
-      } else {
-        renderedCount = i+1;
-      }
-    }
-    if(renderedCount >= ALL_TOOLS.length) loadMoreBtn.style.display = 'none';
+    renderedIndex = 0;
+    loadMoreBtn.style.display = 'inline-block';
+    appendNextChunk();
   }
 
   // open modal
@@ -216,10 +213,7 @@
     mHow.innerHTML = '';
     if(Array.isArray(t.how)){
       t.how.forEach((s,i)=>{
-        const d = document.createElement('div');
-        d.className = 'step';
-        d.innerText = `${i+1}. ${s}`;
-        mHow.appendChild(d);
+        const d = document.createElement('div'); d.className='step'; d.innerText = `${i+1}. ${s}`; mHow.appendChild(d);
       });
     }
     downloadBtn.onclick = ()=> {
@@ -227,7 +221,7 @@
       const content = (t.example || '') + '\n';
       const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href=url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
     };
     copyInstall.onclick = ()=> copyToClipboard(t.install||'');
     copyExample.onclick = ()=> copyToClipboard(t.example||'');
@@ -235,12 +229,9 @@
     setTimeout(()=> modal.classList.add('show'), 20);
   }
 
-  function closeModalFunc(){
-    modal.classList.remove('show');
-    setTimeout(()=> modalBack.style.display = 'none', 160);
-  }
+  function closeModalFunc(){ modal.classList.remove('show'); setTimeout(()=> modalBack.style.display='none',160); }
 
-  // delegation for grid actions
+  // grid delegation
   grid.addEventListener('click', (e)=>{
     const det = e.target.closest('button[data-action="details"]');
     const dl = e.target.closest('button[data-action="download"]');
@@ -253,7 +244,7 @@
       const content = (t.example || '') + '\n';
       const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
     }
   });
 
@@ -263,24 +254,20 @@
     navigator.clipboard.writeText(text).then(()=> alert('تم النسخ إلى الحافظة')).catch(()=> alert('فشل النسخ — انسخ يدوياً'));
   }
 
-  // filters & search handlers
-  btnAll.addEventListener('click', ()=>{ currentFilter='all'; setActive(btnAll); renderInitial(); });
-  btnPy.addEventListener('click', ()=>{ currentFilter='بايثون'; setActive(btnPy); renderInitial(); });
-  btnTx.addEventListener('click', ()=>{ currentFilter='تريمكس'; setActive(btnTx); renderInitial(); });
+  // filters & search
+  btnAll.addEventListener('click', ()=>{ currentFilter='all'; setActive(btnAll); resetAndRender(); });
+  btnPy.addEventListener('click', ()=>{ currentFilter='بايثون'; setActive(btnPy); resetAndRender(); });
+  btnTx.addEventListener('click', ()=>{ currentFilter='تريمكس'; setActive(btnTx); resetAndRender(); });
 
-  function setActive(el){
-    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-    el.classList.add('active');
-  }
+  function setActive(el){ document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
 
-  // search debounce
   let searchTimer = null;
   searchInput.addEventListener('input', ()=>{
     if(searchTimer) clearTimeout(searchTimer);
-    searchTimer = setTimeout(()=> renderInitial(), 160);
+    searchTimer = setTimeout(()=> resetAndRender(), 160);
   });
 
-  loadMoreBtn.addEventListener('click', ()=> loadMoreSmart());
+  loadMoreBtn.addEventListener('click', ()=> appendNextChunk());
 
   // modal controls
   document.getElementById('closeModal').addEventListener('click', closeModalFunc);
@@ -296,11 +283,7 @@
   });
 
   // initial render
-  document.addEventListener('DOMContentLoaded', ()=>{
-    renderInitial();
-  });
-
-  // expose for debug
-  window.F16_TOOLS = ALL_TOOLS;
-
+  document.addEventListener('DOMContentLoaded', ()=>{ resetAndRender(); });
+  // expose for debugging
+  window.F16_ALL_TOOLS = ALL_TOOLS;
 })();
