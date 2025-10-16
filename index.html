@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>مقر F16 — مكتبة الأدوات المتقدمة (1000)</title>
+  <title>مقر F16 — مكتبة أدوات الأمن السيبراني (1000)</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,8 +11,8 @@
     <div class="brand">
       <div class="logo">F16</div>
       <div class="title-block">
-        <div class="title">مقر F16 — مكتبة الأدوات المتقدمة</div>
-        <div class="subtitle">مراجع تعليمية وآمنة — استخدم الأدوات داخل مختبر معزول أو بشبكات تملك إذنًا فقط</div>
+        <div class="title">مقر F16 — مكتبة أدوات الأمن السيبراني</div>
+        <div class="subtitle">مرجع تعليمي وآمن — استعمل الأدوات داخل مختبر معزول أو على أنظمة لديك إذن بفحصها</div>
       </div>
     </div>
   </header>
@@ -24,16 +24,22 @@
       <button id="btnTx" class="filter-btn" data-filter="تريمكس">تريمكس</button>
     </div>
 
-    <input id="searchInput" class="search" placeholder="🔎 ابحث باسم الأداة أو الوصف — اضغط '/' للتركيز">
-    <div class="info">أدوات: <span id="totalCount">1000</span> — عرض دفعة أولى لتحسين الأداء</div>
+    <div class="search-wrap">
+      <input id="searchInput" class="search" placeholder="🔎 ابحث باسم الأداة أو الوصف — اضغط '/' للتركيز">
+      <div class="shortcuts">مفاتيح: <span class="kbd">1</span> الكل • <span class="kbd">2</span> بايثون • <span class="kbd">3</span> تريمكس • <span class="kbd">/</span> بحث</div>
+    </div>
+
+    <div class="info">إجمالي الأدوات: <span id="totalCount">1000</span></div>
   </div>
 
   <main class="container">
     <div id="grid" class="grid" role="list" aria-live="polite"></div>
+
     <div class="load-more-wrap">
       <button id="loadMore" class="btn primary">تحميل المزيد (100)</button>
     </div>
-    <div class="footer-note">© @HRT_AMN — مرجع تعليمي فقط. لا تستخدم الأدوات ضد أنظمة بدون إذن.</div>
+
+    <div class="footer-note">© @HRT_AMN — مرجع تعليمي فقط. أي استخدام غير قانوني خارج مسؤولية المستخدم.</div>
   </main>
 
   <!-- Modal -->
